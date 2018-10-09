@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <ctype.h>
 
 #define BUF_SIZE 1024
 
@@ -26,10 +26,12 @@ int copy_non_vowels(int num_chars, char* in_buf, char* out_buf) {
      * that were copied over.
      */
   int num_not_vowels = 0;
+  int j = 0;
   for (int i = 0; i < num_chars; i++) {
     if (!is_vowel(in_buf[i])){
-      out_buf[i] = in_buf[i];
+      out_buf[j] = in_buf[i];
       num_not_vowels++;
+      j++;
     }
   }
   return num_not_vowels;
@@ -70,13 +72,34 @@ void disemvowel(FILE* inputFile, FILE* outputFile) {
 int main(int argc, char *argv[]) { 
     FILE *inputFile; 
     FILE *outputFile;
+    
+    if (argc == 1) {
+      inputFile = stdin;
+      outputFile = stdout;
+    }
+      
+    if (argc == 2 && argv[1] == 0) {
+        inputFile = stdin;
+	outputFile = fopen(argv[2], "w");
+    }
 
-    inputFile = fopen(argv[1], "r");
-    outputFile = fopen(argv[2], "w");
+    if (argc == 2 && argv[2] == 0 ) {
+        outputFile = stdout;
+        inputFile = fopen(argv[1], "r");
+    }
+    
+    if (argc == 3) {
+        inputFile = fopen(argv[1], "r");
+        outputFile = fopen(argv[2], "w");
+    }
+
     // Code that processes the command line arguments 
     // and sets up inputFile and outputFile.
 
     disemvowel(inputFile, outputFile);
+
+    fclose(inputFile);
+    fclose(outputFile);
 
     return 0; 
 }
