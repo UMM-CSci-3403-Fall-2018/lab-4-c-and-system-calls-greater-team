@@ -16,6 +16,15 @@ bool is_dir(const char* path) {
    * return value from stat in case there is a problem, e.g., maybe the
    * the file doesn't actually exist.
    */
+  struct stat statbuf;
+
+  if (stat(path, &statbuf) != 0 ) {
+    // print error and die
+    printf("Error: Statbuf was not 0");
+  }
+
+  return S_ISDIR(statbuf->st_mode);
+  
 }
 
 /* 
@@ -36,6 +45,22 @@ void process_directory(const char* path) {
    * with a matching call to chdir() to move back out of it when you're
    * done.
    */
+
+  DIR *dir;
+  dir = opendir(path);
+
+  struct dirent *entry;
+
+  //chdir(...new path...);
+  while ((entry=readdir(dir)) != NULL) {
+    // call process_path here to check if dir or file
+    process_path(entry);
+    
+  }
+  //chdir("..");
+  
+  closedir(dir);
+
 }
 
 void process_file(const char* path) {
