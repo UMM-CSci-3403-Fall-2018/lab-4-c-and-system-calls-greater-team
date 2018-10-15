@@ -21,9 +21,10 @@ bool is_dir(const char* path) {
   if (stat(path, &statbuf) != 0 ) {
     // print error and die
     printf("Error: Statbuf was not 0");
+    return 1;
   }
 
-  return S_ISDIR(statbuf->st_mode);
+  return S_ISDIR(statbuf.st_mode);
   
 }
 
@@ -49,21 +50,24 @@ void process_directory(const char* path) {
   DIR *dir;
   dir = opendir(path);
 
-  struct dirent *entry;
+  struct dirent* entry;
 
-  //chdir(...new path...);
-  while ((entry=readdir(dir)) != NULL) {
+  chdir(path);
+  while ((entry=(readdir(dir))) != NULL) {
+    if ((strcmp(entry->d_name, ".") == 0) ||(strcmp(entry->d_name, "..") == 0)){
+    continue;
+    }
     // call process_path here to check if dir or file
-    process_path(entry);
-    
+    process_path(entry->d_name);
   }
-  //chdir("..");
-  
+  num_dirs++;
+  chdir("..");
   closedir(dir);
 
 }
 
 void process_file(const char* path) {
+ num_regular++; 
   /*
    * Update the number of regular files.
    */
